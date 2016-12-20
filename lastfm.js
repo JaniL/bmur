@@ -32,10 +32,6 @@ module.exports = function (bot) {
   }
 
   function printRes(res) {
-    console.log(res);
-    console.log(res.track[0]);
-    console.log(new Date(parseInt(res.track[0].date.uts)*1000));
-
     let track = res.track[0]
     track.date = new Date(parseInt(track.date.uts)*1000);
     if (!currentTrack || track.date > currentTrack.date) {
