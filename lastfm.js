@@ -33,7 +33,10 @@ module.exports = (bot) => {
   }
 
   bot.onText(/\/np/, (msg) => {
-    bot.sendMessage(msg.chat.id, formatCommand())
+    if ((new Date) - lastAnnounce) >= (60 * 1000) {
+      bot.sendMessage(msg.chat.id, formatCommand())
+      lastAnnounce = new Date()
+    }
   })
 
   function announce() {
