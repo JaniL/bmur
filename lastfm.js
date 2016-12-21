@@ -1,8 +1,9 @@
 const lastfm = require("lastfm-njs");
 const fs = require('fs');
+const moment = require('moment');
 const ONE_HOUR = 60 * 60 * 1000;
 
-module.exports = function (bot) {
+module.exports = (bot) => {
   const lfm = new lastfm({
     apiKey: process.env.LASTFM_KEY,
     apiSecret: process.env.LASTFM_SECRET,
@@ -13,7 +14,7 @@ module.exports = function (bot) {
   var lastAnnounce = null;
   var groups = JSON.parse(fs.readFileSync('groups.json')) || [];
 
-  bot.on('message', function (msg) {
+  bot.on('message', (msg) => {
     if (!groups.includes(msg.chat.id)) groups.push(msg.chat.id);
     fs.writeFileSync('groups.json', JSON.stringify(groups))
   });
@@ -24,10 +25,25 @@ module.exports = function (bot) {
     return message
   }
 
+  function formatCommand() {
+    let message = ''
+    message += '🐻 ' + currentTrack.artist['#text'] + ' - ' + currentTrack.name + ' 🐻'
+    message += '\n' + moment(currentTrack.date).fromNow()
+    return message
+  }
+
+  bot.onText(/\/np/, (msg) => {
+    bot.sendMessage(msg.chat.id, formatCommand())
+  })
+
   function announce() {
     for (let group of groups) {
       bot.sendMessage(group, formatAnnounce())
     }
+  }
+
+  function trackHasBeenPlayedDuringTheLastHour(track) {
+    return ((new Date) - track.date) <= ONE_HOUR
   }
 
   function printRes(res) {
@@ -39,7 +55,7 @@ module.exports = function (bot) {
     }
     if (!currentTrack || track.date > currentTrack.date) {
       currentTrack = track;
-      if (((new Date) - track.date) <= ONE_HOUR && (!lastAnnounce || ((new Date) - lastAnnounce) >= ONE_HOUR)) {
+      if (trackHasBeenPlayedDuringTheLastHour(track) && (!lastAnnounce || ((new Date) - lastAnnounce) >= ONE_HOUR)) {
         lastAnnounce = new Date()
         announce()
       }
