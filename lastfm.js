@@ -25,7 +25,6 @@ module.exports = function (bot) {
   }
 
   function announce() {
-    console.log("lel");
     for (let group of groups) {
       bot.sendMessage(group, formatAnnounce())
     }
@@ -40,7 +39,7 @@ module.exports = function (bot) {
     }
     if (!currentTrack || track.date > currentTrack.date) {
       currentTrack = track;
-      if (!lastAnnounce || ((new Date) - lastAnnounce) < ONE_HOUR) {
+      if (((new Date) - track.date) <= ONE_HOUR && (!lastAnnounce || ((new Date) - lastAnnounce) >= ONE_HOUR)) {
         lastAnnounce = new Date()
         announce()
       }
