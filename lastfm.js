@@ -15,7 +15,7 @@ module.exports = (bot) => {
   var groups = JSON.parse(fs.readFileSync('groups.json')) || [];
 
   bot.on('message', (msg) => {
-    if (!groups.includes(msg.chat.id)) groups.push(msg.chat.id);
+    if (msg.chat.type !== 'private' && !groups.includes(msg.chat.id)) groups.push(msg.chat.id);
     fs.writeFileSync('groups.json', JSON.stringify(groups))
   });
 
