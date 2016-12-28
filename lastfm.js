@@ -10,7 +10,7 @@ module.exports = (bot) => {
     username: process.env.LASTFM_USERNAME
   });
 
-  var currentTrack = null;
+  var tracks = [];
   var lastAnnounce = null;
   var groups = JSON.parse(fs.readFileSync('groups.json')) || [];
 
@@ -21,14 +21,14 @@ module.exports = (bot) => {
 
   function formatAnnounce() {
     let message = ''
-    message += '🐻 ' + currentTrack.artist['#text'] + ' - ' + currentTrack.name + ' 🐻'
+    message += '🐻 ' + tracks[0].artist['#text'] + ' - ' + tracks[0].name + ' 🐻'
     return message
   }
 
   function formatCommand() {
     let message = ''
-    message += '🐻 ' + currentTrack.artist['#text'] + ' - ' + currentTrack.name + ' 🐻'
-    message += '\n' + moment(currentTrack.date).fromNow()
+    message += '🐻 ' + tracks[0].artist['#text'] + ' - ' + tracks[0].name + ' 🐻'
+    message += '\n' + moment(tracks[0].date).fromNow()
     return message
   }
 
@@ -46,16 +46,20 @@ module.exports = (bot) => {
     return ((new Date) - track.date) <= ONE_HOUR
   }
 
-  function printRes(res) {
-    let track = res.track[0];
+  function convertDate(track) {
     if (track['@attr'] && track['@attr'].nowplaying === 'true') {
       track.date = new Date()
     } else {
       track.date = new Date(parseInt(track.date.uts)*1000);
     }
-    if (!currentTrack || track.date > currentTrack.date) {
-      currentTrack = track;
-      if (trackHasBeenPlayedDuringTheLastHour(track) && (!lastAnnounce || ((new Date) - lastAnnounce) >= ONE_HOUR)) {
+    return track;
+  }
+
+  function printRes(res) {
+    res = res.track.map(convertDate)
+    if (!tracks || tracks.length === 0 || res[0].date > tracks[0].date) {
+      tracks = res;
+      if (trackHasBeenPlayedDuringTheLastHour(res[0]) && (!lastAnnounce || ((new Date) - lastAnnounce) >= ONE_HOUR)) {
         lastAnnounce = new Date()
         announce()
       }
@@ -69,7 +73,7 @@ module.exports = (bot) => {
   function fetch() {
     lfm.user_getRecentTracks({
        user: 'matlu_klusteri',
-       limit: 5
+       limit: 10
     }).then(printRes, printError);
   }
 
