@@ -32,8 +32,19 @@ module.exports = (bot) => {
     return message
   }
 
+  function formatRecent(t) {
+    return '- [' + t.artist['#text'] + ' - ' + t.name + '](' + t.url + ') (' + moment(t.date).fromNow() + ')'
+  }
+
   bot.onText(/\/np/, (msg) => {
     bot.sendMessage(msg.chat.id, formatCommand())
+  })
+
+  bot.onText(/\/recent/, (msg) => {
+    bot.sendMessage(msg.chat.id, tracks.map(formatRecent).join('\n'), {
+      'disable_web_page_preview': true,
+      'parse_mode': 'markdown'
+    })
   })
 
   function announce() {
