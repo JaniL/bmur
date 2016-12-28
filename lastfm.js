@@ -68,7 +68,7 @@ module.exports = (bot) => {
 
   function printRes(res) {
     res = res.track.map(convertDate)
-    if (!tracks || tracks.length === 0 || res[0].date > tracks[0].date) {
+    if (!tracks || tracks.length === 0 || (res[0].mbid !== tracks[0].mbid && res[0].date > tracks[0].date)) {
       tracks = res;
       if (trackHasBeenPlayedDuringTheLastHour(res[0]) && (!lastAnnounce || ((new Date) - lastAnnounce) >= ONE_HOUR)) {
         lastAnnounce = new Date()
