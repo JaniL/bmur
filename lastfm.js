@@ -89,6 +89,6 @@ module.exports = (bot) => {
   }
 
   fetch()
-  setInterval(fetch, 5 * 60 * 1000)
+  setInterval(fetch, 5 * 1000)
 
 }
