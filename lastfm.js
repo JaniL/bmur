@@ -41,7 +41,8 @@ module.exports = (bot) => {
   })
 
   bot.onText(/\/recent/, (msg) => {
-    bot.sendMessage(msg.chat.id, tracks.reverse().map(formatRecent).join('\n'), {
+    var tClone = tracks.slice(0).reverse();
+    bot.sendMessage(msg.chat.id, tClone.map(formatRecent).join('\n'), {
       'disable_web_page_preview': true,
       'parse_mode': 'markdown'
     })
