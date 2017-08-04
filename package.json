@@ -13,5 +13,8 @@
     "lastfm-njs": "^0.2.4",
     "moment": "^2.17.1",
     "node-telegram-bot-api": "^0.24.0"
+  },
+  "devDependencies": {
+    "standard": "^10.0.2"
   }
 }
