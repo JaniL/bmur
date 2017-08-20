@@ -73,7 +73,7 @@ module.exports = (bot) => {
       return
     }
     tracks = res.track.map(convertDate)
-    if (trackHasBeenPlayedDuringTheLastHour(tracks[0]) && (!lastAnnounce || ((new Date()) - lastAnnounce) >= ONE_HOUR)) {
+    if ((new Date() - track.date <= FETCH_INTERVAL) && (!tracks[1] || tracks[0].date - tracks[1].date > ONE_HOUR)) {
       lastAnnounce = new Date()
       announce()
     }
