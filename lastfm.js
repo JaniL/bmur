@@ -2,6 +2,7 @@ const lastfm = require('lastfm-njs')
 const fs = require('fs')
 const moment = require('moment')
 const ONE_HOUR = 60 * 60 * 1000
+const FETCH_INTERVAL = 10 * 1000 // ms
 
 module.exports = (bot) => {
   const lfm = new lastfm({
@@ -72,7 +73,7 @@ module.exports = (bot) => {
       return
     }
     tracks = res.track.map(convertDate)
-    if (trackHasBeenPlayedDuringTheLastHour(tracks[0]) && (!lastAnnounce || ((new Date()) - lastAnnounce) >= ONE_HOUR)) {
+    if ((new Date() - track.date <= FETCH_INTERVAL) && (tracks[0].date - tracks[1].date > ONE_HOUR)) {
       lastAnnounce = new Date()
       announce()
     }
@@ -86,9 +87,8 @@ module.exports = (bot) => {
     lfm.user_getRecentTracks({
       user: 'matlu_klusteri',
       limit: 10
-    }).then(printRes, printError)
+    }).then(printRes, printError).then(() => setTimeout(fetch, FETCH_INTERVAL))
   }
 
   fetch()
-  setInterval(fetch, 5 * 1000)
 }
